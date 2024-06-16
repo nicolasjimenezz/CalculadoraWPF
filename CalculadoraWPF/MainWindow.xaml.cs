@@ -19,9 +19,7 @@ namespace CalculadoraWPF
     public partial class MainWindow : Window
     {
         decimal operator1, operator2, result;
-        int currentField=1;
-        bool allowOperation=true;
-        bool equalsPressed,deleteOperator2 = false;
+        int currentStatus = 0; // 0:Input operator1 +(user press symbol), 1:Waiting for input operator2 +(user press equals), 2:Result displayed (faltaria si quiero operar con resultado?)
 
         public MainWindow()
         {
@@ -29,145 +27,244 @@ namespace CalculadoraWPF
         }
         private void Button_Click_0(object sender, RoutedEventArgs e)
         {
-            checkNumber(0);
+            addNumber(0);
         }
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
-            checkNumber(1);
+            addNumber(1);
         }
-
         private void Button_Click_2(object sender, RoutedEventArgs e)
         {
-            checkNumber(2);
+            addNumber(2);
         }
         private void Button_Click_3(object sender, RoutedEventArgs e)
         {
-            checkNumber(3);
+            addNumber(3);
         }
         private void Button_Click_4(object sender, RoutedEventArgs e)
         {
-            checkNumber(4);
+            addNumber(4);
         }
         private void Button_Click_5(object sender, RoutedEventArgs e)
         {
-            checkNumber(5);
+            addNumber(5);
         }
         private void Button_Click_6(object sender, RoutedEventArgs e)
         {
-            checkNumber(6);
+            addNumber(6);
         }
         private void Button_Click_7(object sender, RoutedEventArgs e)
         {
-            checkNumber(7);
+            addNumber(7);
         }
         private void Button_Click_8(object sender, RoutedEventArgs e)
         {
-            checkNumber(8);
+            addNumber(8);
         }
         private void Button_Click_9(object sender, RoutedEventArgs e)
         {
-            checkNumber(9);
+            addNumber(9);
         }
 
         private void Button_Click_addition(object sender, RoutedEventArgs e)
         {
-            if (allowOperation)
+            if (currentStatus == 2)
             {
+                defaultStatusSaveResult();
+                fieldOperator1.Text = result.ToString();
+            }
+            if (currentStatus == 0 && fieldOperator1.Text!="")
+            {
+                currentStatus = 1;
                 fieldSymbol.Text = "+";
-                allowOperation = false;
             }
-            else if (equalsPressed)
-            {
-                equalsPressed = false;
-                fieldOperator1.Text = fieldResult.Text;
-                fieldOperator2.Text = fieldResult.Text = "";
-                fieldSymbol.Text = "+";
-                fieldEquals.Text = "";
-            }
-            else
-            {
-                MessageBox.Show("Presione signo igual = para finalizar la operación actual");
-            }
+            else inputError(currentStatus);
         }
 
         private void Button_Click_equals(object sender, RoutedEventArgs e)
         {
-            operator1 = decimal.Parse(fieldOperator1.Text);
-            operator2 = decimal.Parse(fieldOperator2.Text);
-            switch (fieldSymbol.Text)
+            if (currentStatus == 1)
             {
-                case "+":
+                currentStatus = 2;
+                operator1 = decimal.Parse(fieldOperator1.Text);
+                operator2 = decimal.Parse(fieldOperator2.Text);
+                switch (fieldSymbol.Text)
                 {
-                    result = operator1 + operator2;
-                    
-                    fieldResult.Text = result.ToString();
-                    break;
+                    case "+":
+                        {
+                            result = operator1 + operator2;
+                            fieldResult.Text = result.ToString();
+                            break;
+                        }
                 }
+                // Delete the excess of 0s (if they exist) and replace in fieldResult and result
+                string resultTruncated = result.ToString();
+                resultTruncated=resultTruncated.TrimEnd('0');
+                fieldResult.Text = resultTruncated;
+                result = decimal.Parse(resultTruncated);
+                fieldEquals.Text = "=";
             }
+            else inputError(currentStatus);
+        }
 
-            // Delete the excess of 0s (if they exist)
-            decimal resultTruncated = decimal.Truncate(result);
-            if ((result) / resultTruncated == 1)
+        private void Button_Click_CE(object sender, RoutedEventArgs e)
+        {
+            switch (currentStatus)
             {
-                fieldResult.Text = resultTruncated.ToString();
+                case 0:
+                    {
+                        fieldOperator1.Text="";
+                        break;
+                    }
+                case 1:
+                    {
+                        fieldOperator2.Text="";
+                        break;
+                    }
+                case 2:
+                    {
+                        defaultStatus();
+                        break;
+                    }
+                default:
+                    {
+                        MessageBox.Show("CE ERROR");
+                        break;
+                    }
             }
-
-            fieldEquals.Text = "=";
-            equalsPressed = true;
-            deleteOperator2 = true;
         }
 
         private void Button_Click_C(object sender, RoutedEventArgs e)
         {
-            fieldOperator1.Text = fieldOperator2.Text = fieldSymbol.Text = "";
-            fieldResult.Text = "0";
-            operator1 = operator2 = 0;
-            allowOperation = true;
+            defaultStatus();
         }
 
         private void Button_Click_point(object sender, RoutedEventArgs e)
         {
-            if (allowOperation) fieldOperator1.Text += ",";
-            else fieldOperator2.Text += ",";
+            switch (currentStatus)
+            {
+                case 0: fieldOperator1.Text += ","; break;
+                case 1: fieldOperator2.Text += ","; break;
+                default: MessageBox.Show("You can not add a decimal here"); break;
+            }
         }
 
         private void Button_Click_deleteLastDigit(object sender, RoutedEventArgs e)
         {
-            string delete;
-
-            delete = fieldResult.Text;
-            if (delete.Length>0) fieldResult.Text = delete.Remove(delete.Length-1);
-            if (fieldResult.Text == "") fieldResult.Text = "0";
-
-
-
-
-            //TODO Permitir que el delete elimine digitos del op1 y op2
-        }
-
-        private void checkNumber(decimal num)
-        {
-            if (fieldOperator1.Text == "" || allowOperation) addOperator1(num);
-            else addOperator2(num);
-        }
-
-        private void addOperator1(decimal num)
-        {
-            fieldOperator1.Text += num.ToString();
-        }
-        private void addOperator2(decimal num)
-        {
-            if (deleteOperator2)
+            string numberToDelete;
+            switch (currentStatus)
             {
-                fieldOperator2.Text = "";
-                deleteOperator2 = false;
-                fieldOperator2.Text += num.ToString();
-            }
-            else
-            {
-                fieldOperator2.Text += num.ToString();
+                case 0:
+                    {
+                        numberToDelete = fieldOperator1.Text;
+                        if (numberToDelete.Length > 0) fieldOperator1.Text=numberToDelete.Remove(numberToDelete.Length - 1);
+                        break;
+                    }
+                case 1:
+                    {
+                        numberToDelete = fieldOperator2.Text;
+                        if (numberToDelete.Length > 0) fieldOperator2.Text = numberToDelete.Remove(numberToDelete.Length - 1);
+                        break;
+                    }
+                case 2:
+                    {
+                        defaultStatus();
+                        break;
+                    }
+                default:
+                    {
+                        MessageBox.Show("deleteLastDigit ERROR");
+                        break;
+                    }
             }
         }
 
+        private void addNumber(decimal num)
+        {
+            switch (currentStatus)
+            {
+                case 0:
+                    {
+                        if (fieldOperator1.Text!="0") fieldOperator1.Text += num.ToString();
+                        break;
+                    }
+                case 1:
+                    {
+                        if (fieldOperator2.Text != "0") fieldOperator2.Text += num.ToString();
+                        break;
+                    }
+                case 2:
+                    {
+                        currentStatus = 0;
+                        defaultStatus();
+                        addNumber(num);
+                        break;
+                    }
+                default:
+                    {
+                        MessageBox.Show("addNumber ERROR");
+                        break;
+                    }
+            }
+        }
+
+        private void defaultStatus() // Status before first operation
+        {
+            currentStatus = 0;
+            fieldOperator1.Text = fieldOperator2.Text = fieldSymbol.Text = fieldEquals.Text = "";
+            fieldResult.Text = "0";
+            operator1 = operator2 = result = 0;
+        }
+
+        private void Button_Click_negative(object sender, RoutedEventArgs e)
+        {
+            switch (currentStatus)
+            {
+                case 0:
+                    {
+                        string operatorText = fieldOperator1.Text;
+                        if (operatorText == "") fieldOperator1.Text = "-";
+                        else if (operatorText[0] == '-')
+                        {
+                            fieldOperator1.Text = operatorText.Trim('-');
+                        }
+                        else fieldOperator1.Text = "-" + fieldOperator1.Text;
+                        break;
+                    }
+                case 1:
+                    {
+                        string operatorText = fieldOperator2.Text;
+                        if (operatorText == "") fieldOperator2.Text = "-";
+                        else if (operatorText[0] == '-')
+                        {
+                            fieldOperator2.Text = operatorText.Trim('-');
+                        }
+                        else fieldOperator2.Text = "-" + fieldOperator2.Text;
+                        break;
+                    }
+
+                //case 1: fieldOperator2.Text = "-" + fieldOperator2.Text; break;
+                default: MessageBox.Show("You can not add a negative here"); break;
+            }
+        }
+
+        private void defaultStatusSaveResult()
+        {
+            currentStatus = 0;
+            fieldOperator1.Text = fieldOperator2.Text = fieldSymbol.Text = "";
+            fieldResult.Text = "0";
+            operator1 = operator2 = 0;
+        }
+
+        private void inputError(int currentStatus)
+        {
+            switch (currentStatus)
+            {
+                case 0: MessageBox.Show("Current status: 0. Input operator1 to continue"); break;
+                case 1: MessageBox.Show("Current status: 1. Input operator2 and = to continue"); break;
+                case 2: MessageBox.Show("Current status: 2. Result displayed, input new number to start a new operation or press a symbol to keep operating same number"); break;
+                default: MessageBox.Show("Something went really bad (inputError ERROR)"); break;
+            }
+        }
     }
 }
