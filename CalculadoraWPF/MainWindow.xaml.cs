@@ -87,14 +87,13 @@ namespace CalculadoraWPF
             if (currentStatus == 1)
             {
                 currentStatus = 2;
-                if (fieldOperator1.Text != "-" && fieldOperator2.Text != "-" && fieldOperator1.Text != "" && fieldOperator2.Text != "")
-                {
-                    operator1 = decimal.Parse(fieldOperator1.Text);
-                    operator2 = decimal.Parse(fieldOperator2.Text);
-                }
-                if (fieldOperator1.Text == "") operator1 = 0;
-                if (fieldOperator2.Text == "") operator2 = 0;
+                // If input is blank, -, ',' or "-," it will get assigned a 0
+                if (fieldOperator1.Text == "" || fieldOperator1.Text == "-" || fieldOperator1.Text == "," || fieldOperator1.Text == "-,") fieldOperator1.Text = "0";
+                if (fieldOperator2.Text == "" || fieldOperator2.Text == "-" || fieldOperator2.Text == "," || fieldOperator2.Text == "-,") fieldOperator2.Text = "0";
 
+                operator1 = decimal.Parse(fieldOperator1.Text);
+                operator2 = decimal.Parse(fieldOperator2.Text);
+                
                 switch (fieldSymbol.Text)
                 {
                     case "+":
