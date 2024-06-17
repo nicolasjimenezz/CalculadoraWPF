@@ -20,6 +20,7 @@ namespace CalculadoraWPF
     {
         decimal operator1=0, operator2=0, result=0;
         int currentStatus = 0; // 0:Input operator1 +(user press symbol), 1:Waiting for input operator2 +(user press equals), 2:Result displayed (faltaria si quiero operar con resultado?)
+        int maxDigits = 11;
 
         public MainWindow()
         {
@@ -99,26 +100,38 @@ namespace CalculadoraWPF
                     case "+":
                         {
                             result = operator1 + operator2;
-                            fieldResult.Text = result.ToString();
                             break;
                         }
                     case "-":
                         {
                             result = operator1 - operator2;
-                            fieldResult.Text = result.ToString();
                             break;
                         }
                     case "*":
                         {
                             result = operator1 * operator2;
-                            fieldResult.Text = result.ToString();
+                            break;
+                        }
+                    case "/":
+                        {
+                            if (operator2 == 0)
+                            {
+                                MessageBox.Show("You can not divide by 0, input another number");
+                                currentStatus = 1;
+                                break;
+                            }
+                            result = operator1 / operator2;
                             break;
                         }
                 }
+                string resultString = result.ToString();
+                if (resultString.Length >= maxDigits) resultString = resultString.Remove(maxDigits);
+                fieldResult.Text = resultString;
+
                 // Delete the excess of 0s (if they exist) and replace in fieldResult and result
-                if (result.ToString().Length > 1)
+                if (resultString.Length > 1)
                 {
-                    string resultTruncated = result.ToString();
+                    string resultTruncated = resultString;
                     resultTruncated=resultTruncated.TrimEnd('0');
                     fieldResult.Text = resultTruncated;
                     if (resultTruncated != "-") result = decimal.Parse(resultTruncated);
@@ -127,7 +140,7 @@ namespace CalculadoraWPF
 
                 // Delete the last "," if it was left after a decimal "became" an int in the last operation
                 int resultLength = fieldResult.Text.Length;
-                string resultString = fieldResult.Text;
+                resultString = fieldResult.Text;
                 if (resultString[resultLength - 1] == ',') fieldResult.Text= resultString.Remove(resultString.Length - 1);
             }
             else inputError(currentStatus);
@@ -174,7 +187,6 @@ namespace CalculadoraWPF
                         if (fieldOperator1.Text.IndexOf(',') == -1) fieldOperator1.Text += ","; 
                         break;
                     }
-                    
                 case 1:
                     {
                         if (fieldOperator2.Text.IndexOf(',') == -1) fieldOperator2.Text += ",";
@@ -226,6 +238,7 @@ namespace CalculadoraWPF
                 case 1:
                     {
                         if (fieldOperator2.Text != "0") fieldOperator2.Text += num.ToString();
+                        if (fieldOperator2.Text == "0" && fieldSymbol.Text=="/" && num!=0) fieldOperator2.Text += num.ToString(); //TODO ERROR HERE (probably)!
                         break;
                     }
                 case 2:
@@ -311,6 +324,22 @@ namespace CalculadoraWPF
             {
                 currentStatus = 1;
                 fieldSymbol.Text = "*";
+            }
+            else inputError(currentStatus);
+        }
+
+        private void Button_Click_division(object sender, RoutedEventArgs e)
+        {
+            if (currentStatus == 2)
+            {
+                defaultStatusSaveResult();
+                fieldOperator1.Text = result.ToString();
+                fieldSymbol.Text = "/";
+            }
+            if (currentStatus == 0 && fieldOperator1.Text != "")
+            {
+                currentStatus = 1;
+                fieldSymbol.Text = "/";
             }
             else inputError(currentStatus);
         }
