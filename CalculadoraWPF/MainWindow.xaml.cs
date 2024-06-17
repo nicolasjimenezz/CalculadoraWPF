@@ -18,7 +18,7 @@ namespace CalculadoraWPF
     /// </summary>
     public partial class MainWindow : Window
     {
-        decimal operator1, operator2, result;
+        decimal operator1=0, operator2=0, result=0;
         int currentStatus = 0; // 0:Input operator1 +(user press symbol), 1:Waiting for input operator2 +(user press equals), 2:Result displayed (faltaria si quiero operar con resultado?)
 
         public MainWindow()
@@ -72,6 +72,7 @@ namespace CalculadoraWPF
             {
                 defaultStatusSaveResult();
                 fieldOperator1.Text = result.ToString();
+                fieldSymbol.Text = "+";
             }
             if (currentStatus == 0 && fieldOperator1.Text!="")
             {
@@ -86,8 +87,14 @@ namespace CalculadoraWPF
             if (currentStatus == 1)
             {
                 currentStatus = 2;
-                operator1 = decimal.Parse(fieldOperator1.Text);
-                operator2 = decimal.Parse(fieldOperator2.Text);
+                if (fieldOperator1.Text != "-" && fieldOperator2.Text != "-" && fieldOperator1.Text != "" && fieldOperator2.Text != "")
+                {
+                    operator1 = decimal.Parse(fieldOperator1.Text);
+                    operator2 = decimal.Parse(fieldOperator2.Text);
+                }
+                if (fieldOperator1.Text == "") operator1 = 0;
+                if (fieldOperator2.Text == "") operator2 = 0;
+
                 switch (fieldSymbol.Text)
                 {
                     case "+":
@@ -96,13 +103,33 @@ namespace CalculadoraWPF
                             fieldResult.Text = result.ToString();
                             break;
                         }
+                    case "-":
+                        {
+                            result = operator1 - operator2;
+                            fieldResult.Text = result.ToString();
+                            break;
+                        }
+                    case "*":
+                        {
+                            result = operator1 * operator2;
+                            fieldResult.Text = result.ToString();
+                            break;
+                        }
                 }
                 // Delete the excess of 0s (if they exist) and replace in fieldResult and result
-                string resultTruncated = result.ToString();
-                resultTruncated=resultTruncated.TrimEnd('0');
-                fieldResult.Text = resultTruncated;
-                result = decimal.Parse(resultTruncated);
+                if (result.ToString().Length > 1)
+                {
+                    string resultTruncated = result.ToString();
+                    resultTruncated=resultTruncated.TrimEnd('0');
+                    fieldResult.Text = resultTruncated;
+                    if (resultTruncated != "-") result = decimal.Parse(resultTruncated);
+                }
                 fieldEquals.Text = "=";
+
+                // Delete the last "," if it was left after a decimal "became" an int in the last operation
+                int resultLength = fieldResult.Text.Length;
+                string resultString = fieldResult.Text;
+                if (resultString[resultLength - 1] == ',') fieldResult.Text= resultString.Remove(resultString.Length - 1);
             }
             else inputError(currentStatus);
         }
@@ -143,8 +170,17 @@ namespace CalculadoraWPF
         {
             switch (currentStatus)
             {
-                case 0: fieldOperator1.Text += ","; break;
-                case 1: fieldOperator2.Text += ","; break;
+                case 0:
+                    {
+                        if (fieldOperator1.Text.IndexOf(',') == -1) fieldOperator1.Text += ","; 
+                        break;
+                    }
+                    
+                case 1:
+                    {
+                        if (fieldOperator2.Text.IndexOf(',') == -1) fieldOperator2.Text += ",";
+                        break;
+                    }
                 default: MessageBox.Show("You can not add a decimal here"); break;
             }
         }
@@ -216,7 +252,7 @@ namespace CalculadoraWPF
             operator1 = operator2 = result = 0;
         }
 
-        private void Button_Click_negative(object sender, RoutedEventArgs e)
+        private void Button_Click_plusMinus(object sender, RoutedEventArgs e)
         {
             switch (currentStatus)
             {
@@ -248,6 +284,38 @@ namespace CalculadoraWPF
             }
         }
 
+        private void Button_Click_subtraction(object sender, RoutedEventArgs e)
+        {
+            if (currentStatus == 2)
+            {
+                defaultStatusSaveResult();
+                fieldOperator1.Text = result.ToString();
+                fieldSymbol.Text = "-";
+            }
+            if (currentStatus == 0 && fieldOperator1.Text != "")
+            {
+                currentStatus = 1;
+                fieldSymbol.Text = "-";
+            }
+            else inputError(currentStatus);
+        }
+
+        private void Button_Click_multiplication(object sender, RoutedEventArgs e)
+        {
+            if (currentStatus == 2)
+            {
+                defaultStatusSaveResult();
+                fieldOperator1.Text = result.ToString();
+                fieldSymbol.Text = "*";
+            }
+            if (currentStatus == 0 && fieldOperator1.Text != "")
+            {
+                currentStatus = 1;
+                fieldSymbol.Text = "*";
+            }
+            else inputError(currentStatus);
+        }
+
         private void defaultStatusSaveResult()
         {
             currentStatus = 0;
@@ -260,7 +328,7 @@ namespace CalculadoraWPF
         {
             switch (currentStatus)
             {
-                case 0: MessageBox.Show("Current status: 0. Input operator1 to continue"); break;
+                case 0: MessageBox.Show("Current status: 0. Input operator1 and an operation to continue"); break;
                 case 1: MessageBox.Show("Current status: 1. Input operator2 and = to continue"); break;
                 case 2: MessageBox.Show("Current status: 2. Result displayed, input new number to start a new operation or press a symbol to keep operating same number"); break;
                 default: MessageBox.Show("Something went really bad (inputError ERROR)"); break;
