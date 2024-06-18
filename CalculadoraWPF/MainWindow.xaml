@@ -38,14 +38,14 @@
         </Grid>
 
         <TextBlock x:Name="fieldResult" Grid.Column="3"  HorizontalAlignment="Right" Margin="10" Grid.ColumnSpan="1" FontSize="28">0</TextBlock>
-        <Button Grid.Column="0" Grid.Row="1" Margin="2" FontSize="24">%</Button>
+        <Button Grid.Column="0" Grid.Row="1" Margin="2" FontSize="24" Click="Button_Click_percentage">%</Button>
         <Button Grid.Column="1" Grid.Row="1" Margin="2" FontSize="24" Click="Button_Click_CE">CE</Button>
         <Button Grid.Column="2" Grid.Row="1" Margin="2" FontSize="24" Click="Button_Click_C">C</Button>
         <Button Grid.Column="3" Grid.Row="1" Margin="2" FontSize="24" Click="Button_Click_deleteLastDigit">⌫</Button>
 
-        <Button Grid.Column="0" Grid.Row="2" Margin="2" FontSize="24">1/x</Button>
-        <Button Grid.Column="1" Grid.Row="2" Margin="2" FontSize="24">x^2</Button>
-        <Button Grid.Column="2" Grid.Row="2" Margin="2" FontSize="24">x^(1/2)</Button>
+        <Button Grid.Column="0" Grid.Row="2" Margin="2" FontSize="24" Click="Button_Click_fraction">1/x</Button>
+        <Button Grid.Column="1" Grid.Row="2" Margin="2" FontSize="24" Click="Button_Click_power2">x^2</Button>
+        <Button Grid.Column="2" Grid.Row="2" Margin="2" FontSize="24" Click="Button_Click_root2">x^(1/2)</Button>
         <Button Grid.Column="3" Grid.Row="2" Margin="2" FontSize="24" Click="Button_Click_division">/</Button>
 
         <Button Grid.Column="0" Grid.Row="3" Margin="2" FontSize="24" Click="Button_Click_7">7</Button>
