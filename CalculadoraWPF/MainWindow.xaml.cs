@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Globalization;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -16,10 +17,25 @@ namespace CalculadoraWPF
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
+    /// 
+
+    public partial class App : Application
+    {
+        protected override void OnStartup(StartupEventArgs e)
+        {
+            // Set the culture and UI culture here
+            CultureInfo culture = new CultureInfo("es-ES"); // Use any culture, e.g., "en-US", "es-ES", etc.
+            Thread.CurrentThread.CurrentCulture = culture;
+            Thread.CurrentThread.CurrentUICulture = culture;
+
+            base.OnStartup(e);
+        }
+    }
+
     public partial class MainWindow : Window
     {
         decimal operator1 = 0, operator2 = 0, result = 0;
-        int currentStatus = 0; // 0:Input operator1 +(user press symbol), 1:Waiting for input operator2 +(user press equals), 2:Result displayed (faltaria si quiero operar con resultado?)
+        int currentStatus = 0; // 0:Input operator1 +(user press symbol), 1:Waiting for input operator2 +(user press equals), 2:Result displayed
         int maxDigits = 11;
 
         // I have divided the code in 2 sections: "Number input" and "Operations and Actions"

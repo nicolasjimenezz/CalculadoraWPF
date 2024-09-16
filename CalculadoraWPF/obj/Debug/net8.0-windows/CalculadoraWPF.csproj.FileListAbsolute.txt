@@ -8,7 +8,6 @@ C:\Users\Usuario\source\repos\CalculadoraWPF\CalculadoraWPF\obj\Debug\net8.0-win
 C:\Users\Usuario\source\repos\CalculadoraWPF\CalculadoraWPF\obj\Debug\net8.0-windows\CalculadoraWPF_MarkupCompile.cache
 C:\Users\Usuario\source\repos\CalculadoraWPF\CalculadoraWPF\obj\Debug\net8.0-windows\CalculadoraWPF_MarkupCompile.lref
 C:\Users\Usuario\source\repos\CalculadoraWPF\CalculadoraWPF\obj\Debug\net8.0-windows\MainWindow.baml
-C:\Users\Usuario\source\repos\CalculadoraWPF\CalculadoraWPF\obj\Debug\net8.0-windows\CalculadoraWPF.g.resources
 C:\Users\Usuario\source\repos\CalculadoraWPF\CalculadoraWPF\obj\Debug\net8.0-windows\CalculadoraWPF.GeneratedMSBuildEditorConfig.editorconfig
 C:\Users\Usuario\source\repos\CalculadoraWPF\CalculadoraWPF\obj\Debug\net8.0-windows\CalculadoraWPF.AssemblyInfoInputs.cache
 C:\Users\Usuario\source\repos\CalculadoraWPF\CalculadoraWPF\obj\Debug\net8.0-windows\CalculadoraWPF.AssemblyInfo.cs
@@ -19,3 +18,4 @@ C:\Users\Usuario\source\repos\CalculadoraWPF\CalculadoraWPF\obj\Debug\net8.0-win
 C:\Users\Usuario\source\repos\CalculadoraWPF\CalculadoraWPF\obj\Debug\net8.0-windows\CalculadoraWPF.genruntimeconfig.cache
 C:\Users\Usuario\source\repos\CalculadoraWPF\CalculadoraWPF\obj\Debug\net8.0-windows\ref\CalculadoraWPF.dll
 C:\Users\Usuario\source\repos\CalculadoraWPF\CalculadoraWPF\obj\Debug\net8.0-windows\CalculadoraWPF.sourcelink.json
+C:\Users\Usuario\source\repos\CalculadoraWPF\CalculadoraWPF\obj\Debug\net8.0-windows\CalculadoraWPF.g.resources
